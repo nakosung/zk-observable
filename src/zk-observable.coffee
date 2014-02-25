@@ -27,6 +27,7 @@ module.exports = (env = process.env) ->
 				byes = []
 				for k,v of dict()
 					do (k,v) ->
+						{v,encoding} = v
 						if /\/$/.test k											
 							fetch = ->
 								return if killed
@@ -68,7 +69,9 @@ module.exports = (env = process.env) ->
 								console.log 'fetching ', k
 								client.getData k, watcher, (err,data,stat) ->
 									reading = true
-									v data unless err
+									unless err
+										data = data.toString(encoding) if encoding?
+										v data 
 									reading = false
 							fetch()
 				->
@@ -88,24 +91,15 @@ module.exports = (env = process.env) ->
 	sync()
 
 	zk = (path,encoding = 'utf-8') ->
-		raw = ->
-			d = dict()
-			if d[path]
-				d[path]
-			else
-				value = o()
-				d[path] = value
-				dict d
-				value
-		if encoding?
-			o.compute [raw()], (r) -> 
-				if r instanceof Buffer
-					r?.toString(encoding)
-				else
-					r
+		d = dict()
+		if d[path]
+			d[path]
 		else
-			raw()
-
+			value = o()
+			d[path] = v:value, encoding:encoding
+			dict d
+			value
+		
 	zk.off = (path) ->
 		d = dict()
 		delete d[path]
