@@ -93,7 +93,7 @@ module.exports = (env = process.env) ->
 	zk = (path,encoding = 'utf-8') ->
 		d = dict()
 		if d[path]
-			d[path]
+			d[path].v
 		else
 			value = o()
 			d[path] = v:value, encoding:encoding
