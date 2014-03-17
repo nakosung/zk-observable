@@ -31,11 +31,11 @@ module.exports = (env = process.env) ->
 
 				{v,encoding} = v
 				if /\/$/.test k											
+					k = k.substr(0,k.length-1) unless k == '/'
 					fetch = ->
 						return if killed
 						watcher = (event) ->
 							fetch()
-						k = k.substr(0,k.length-1) unless k == '/'
 						console.log 'fetching ', k
 						client.getChildren k, watcher, (err,children,stat) ->
 							v children unless err							
